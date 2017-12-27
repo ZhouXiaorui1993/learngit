@@ -1,6 +1,7 @@
 Git is a version control system
 Git is a free software
-This is a test file
+This is a test file.
 This must be storaged in a Git repository
 Linus is the father of linux
+Creating a new branch is quick.
 he also created GitHub.
