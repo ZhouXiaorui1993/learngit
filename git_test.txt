@@ -6,4 +6,4 @@ Linus is the father of linux
 Creating a new branch is quick.
 he also created GitHub.
 revising the address of origin
-creating a new branch is quick and simple
+creating a new branch is quick but simple
