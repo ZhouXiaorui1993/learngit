@@ -142,7 +142,7 @@ $ git clone [-o <name>] https://github.com/ZhouXiaorui1993/gitskills.git
 **Step4**：如果合并有冲突，则手动解决冲突，并在本地提交；  
 **Step5**：若没有冲突或冲突解决以后，再用`git push origin <branch name>`推送自己的修改至远程。  
 
-**注**：若`git pull`命令提示`“no tracking information”`，则说明本地分支和远程分支之间的链接关系未创建，此时可用命令`git branch –set-upstream <本地分支名> origin/<远程分支名>`来建立二者的关联。  
+**注**：若`git pull`命令提示`“no tracking information”`，则说明本地分支和远程分支之间的链接关系未创建，此时可用命令`git branch –set-upstream-to <本地分支名> origin/<远程分支名>`来建立二者的关联。  
 
 **补充**
 **1）**命令`git fetch <远程库名> [分支名]`：将远程的某个分支的更新取回本地，若不加分支名，则将远程所有分支的更新取回本地。所取回的更新，在本地要用远程库名/分支名的形式读取。  
@@ -205,9 +205,132 @@ $ git checkout dev
 **1）**如果标签打错了，可通过命令`git tag -d <tagname>`来将其删除。因为创建的标签都只存储在本地，不会自动推送到远程。所以打错的标签可在本地安全删除。  
 
 **2）**若要推送某个标签至远程，可使用命令`git push origin <tagname>`，或者使用命令`git push origin --tags`将所有尚未推送到远程的标签一次性推送至远程。  
-
 **3）**对于已经推送到远程的标签，如果想要删除，则需要先用`git tag -d <tagname>`将其在本地删除，然后通过命令`git push origin :refs/tags/<tagname>`将其从远程删除。  
 
 ---
 #六、使用GitHub
+##1.GitHub中的一些功能解释
+
+Gist:用于管理和发布一些没必要保存在仓库中的代码。  
+Popular repository:显示用户的公开仓库中受欢迎的仓库。  
+Contributions:显示每日用户对仓库的贡献程度。  
+Contibution activity:按时间顺序显示具体贡献活动的链接。  
+watch:相当于"订阅"，点击后，在用户的公开活动中会显示该仓库的更新。  
+star:相当于"收藏"，用户可以在该标记中找到被star过的仓库。  
+Fork:将原项目复制到了自己的仓库中，相当于在原有主分支上新建了一个分支。  
+code:显示该仓库中的文件列表。  
+issue:用于bug报告、功能添加、方向性讨论等。  
+pull request:代码的更改和讨论都可以在此进行。  
+pulse:显示该仓库最近的活动信息。  
+Graphs:以图表形式显示该仓库的各项指标。  
+commits:显示当前分支的提交历史。  
+branches:查看仓库的分支列表。  
+releases:显示仓库的tag列表。  
+contributors:显示对该仓库进行过提交的程序员名单。  
+raw:直接在浏览器中显示该文件的内容。  
+blame:按行显示最新提交的信息。  
+history:查看该文件的历史操作记录。  
+
+
+##2.在GitHub中参与一个开源项目的步骤如下:
+**Step1**:访问想要参与的项目主页，点击`Fork`则将该项目仓库复制到了自己的远程库下。注:在GitHub中，可以任意Fork开源仓库。  
+**Step2**:将复制得到的内容从自己的远程库中clone至本地仓库。注意:一定要从自己的账户下clone，只有这样才可以推送修改至远程，如果从作者账号clone，则没有推送修改的权限。  
+**Step3**:对其中的内容进行修改，工作完成后推送至自己的远程库。  
+**Step4**:如果希望作者接受你的修改，则可以在GitHub上发起一个pull request。如果对方接受，则修改就合并到该项目中，开源项目即得到了完善。  
+
+---
+#七、自定义Git
+一些常用的Git自定义功能  
+##1.显示不同的颜色
+```
+git config --global color.ui true
+```
+##2.忽略特殊文件
+**忽略原则**是:  
+1)操作系统自动生成的文件，比如缩略图等；  
+2)编译生成的中间文件、可执行文件等；  
+3)自己带有敏感信息的配置文件，如存放口令的配置文件等。  
+
+**忽略方法**是:修改git工作区根目录下的`.gitignore`文件，将要忽略的文件名填进去，Git就会自动将其忽略(该文件本身要提交到Git，对其做版本管理)。  
+
+检验是否忽略的方法是，使用命令`git status`查看是否提示`working directory clean`。  
+
+命令`git check-ignore`可用来检查`.gitignore`文件，例如:  
+```
+$ git check-ignore -v App.class
+.gitignore:3:*.class    App.class
+```
+Git告诉我们，`.gitignore`文件的第三行规则忽略了该文件。  
+
+##3.配置别名
+###1)配置命令
+有些命令比较繁琐，可以用配置别名的方式对其做简化，例如:
+```
+$ git config --global alias.st status
+```
+执行以上命令后，敲`git st`则相当于`git status`。  
+根据这种思想，我们可以给某些难于记忆的指令配置容易理解的别名，例如命令`git reset HEAD file`可以将暂存区的修改撤销掉，相当于一个unstage的操作，故可以对其配置一个`unstage`别名:
+```
+$ git config --global alias.unstage 'reset HEAD'
+```
+配置完成后，敲入`git unstage test.py`相当于命令`git reset HEAD test.py`  
+
+还有一些常用的配置:
+```
+$ git config --global alias.last 'log -1' #显示最后一次提交的信息
+$ git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+```
+###2)配置文件
+上述命令中，`--global`是针对当前用户的所有仓库起作用的，若不加该参数，则只对当前仓库生效。  
+每个仓库的配置文件都位于`.git/config`文件中，可使用`cat`命令查看该文件。别名位于`[alias]`后面，要删除别名，直接将对应行删掉即可。(注:当前用户的Git配置文件放在用户主目录下的隐藏文件`.gitconfig`中。)  
+若要用命令删除一个已定义的别名，可采用
+```
+$ git config --global --unset alias.xxx
+```
+删除别名为xxx的修改。
+##4.搭建Git服务器
+如果不想公开源代码，又不愿意为GitHub私有仓库付费，可以选择自己搭建一台Git服务器作为私有仓库使用。  
+###1)搭建方法
+**Step1**:安装git
+```
+$ sudo apt-get install git
+```
+**Step2**:创建一个git用户，来运行git服务
+```
+$ sudo adduser git
+```
+**Step3**:创建证书登录  
+收集所有需要登录的用户的公钥，也就是他们各自的`id_rsa.pub`文件，将所有公钥导入到`/home/git/.ssh/authorized_keys`文件中，一行一个。
+**Step4**:初始化Git仓库  
+先选定一个目录作为Git仓库，假定为`/srv/sample.git`，在`/srv`目录下输入命令:
+```
+$ sudo git init --bare sample.git
+```
+Git就会创建一个裸仓库，裸仓库没有工作区，因为这台服务器上的Git仓库纯粹是用于共享，所以不让用户直接登录到服务器上去修改工作区，并且服务器上的Git仓库通常都以`.git`结尾。然后，将owner改为`git`:
+```
+$ sudo chown -R git:git sample.git
+```
+**Step5**:禁用shell登录  
+出于安全考虑，第二步创建的`git`用户不允许登录shell，这可以通过编辑`/etc/passwd`文件完成。找到该文件中类似下面一行:
+```
+git:x:1001:1001:,,,:/home/git:/bin/bash
+```
+改为  
+```
+git:x:1001:1001:,,,:/home/git:/usr/bin/git-shell
+```
+这样，`git`用户就可以正常通过ssh使用git，但无法登录shell，因为我们为`git`用户指定的`git-shell`每次一登录就会自动退出。  
+**Step6**:clone远程仓库  
+```
+$ git clone git@server:/srv/sample.git
+Cloning into 'sample'...
+warning: You appear to have cloned an empty repository.
+```
+剩下的推送方法类似于推送到GitHub。
+###2)管理公钥
+如果团队很小，可以利用上述方法管理。如果团队较大，可以用`Gitosis`来管理公钥。
+
+
+
+
 
