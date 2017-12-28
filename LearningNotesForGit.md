@@ -160,20 +160,19 @@ $ git checkout dev
 
 **注**：`master`为主分支，`HEAD`指向当前分支，`master`指向提交，新建的分支指向`master`相同的提交。  
 **Step2**：可以用命令`git branch`来查看所有分支，当前分支前会有`*`标志。
-补充：`git branch`命令可带选项，其中`-r`选项可用来查看远程分支；`-a`选项查看所有分支。
-
-**Step3**：在当前分支上正常add和提交文件。
+补充：`git branch`命令可带选项，其中`-r`选项可用来查看远程分支；`-a`选项查看所有分支。  
+**Step3**：在当前分支上正常add和提交文件。  
 命令 `git checkout master` 可切换回maser分支，此时在`master`分支上无法看到`dev`分支上提交到的修改内容。  
 **Step4**：将`dev`分支的工作成果合并到`master`分支上，先切换到`master`分支，再使用命令`git merge dev`。注：`git merge`命令是用于将指定分支合并到当前分支。  
 **Step5**：合并完成后，如果不在需要dev分支，则可用命令`git branch -d dev`来删除`dev`分支。  
-**注1**：若某分支未进行合并但想要将其舍弃，可以采用命令`git branch -D dev`来强行删除。
-命令`git push origin :dev`可用来删除远程库中的`dev`分支。
+**注1**：若某分支未进行合并但想要将其舍弃，可以采用命令`git branch -D dev`来强行删除。  
+命令`git push origin :dev`可用来删除远程库中的`dev`分支。  
 
-**注2**：命令`git reflog –date=local | grep <branchname>`:查看对某一分支的操作记录，从而找出该分支的创建来源。
+**注2**：命令`git reflog –date=local | grep <branchname>`:查看对某一分支的操作记录，从而找出该分支的创建来源。  
 
 ##2.解决冲突
-若同一文件在不同分支都进行了修改并提交，则合并时可能会出现冲突（`git`会有提示），此时需要手动修改文件以消除冲突，提交后再进行合并即可（可`cat`查看文件内容以发现冲突所在位置）。
-命令`git log –graph`可以看到分支合并图。
+若同一文件在不同分支都进行了修改并提交，则合并时可能会出现冲突（`git`会有提示），此时需要手动修改文件以消除冲突，提交后再进行合并即可（可`cat`查看文件内容以发现冲突所在位置）。  
+命令`git log –graph`可以看到分支合并图。  
 ##3.分支管理策略
 一般情况下，git默认合并分支为`Fast Forward`模式，此模式下，若删除原分支，则会丢失其信息。若想保留该历史信息，则可强制禁止该模式，这样合并时Git会生成一个新的`commit`。
 命令```git merge --no-ff -m “新的commit描述” branch_name```可以禁止`Fast Forward`模式
@@ -185,14 +184,12 @@ $ git checkout dev
 **2）**假定此时`master`分支上的`problem`文件出现bug，则切换到`master`分支进行修复。切换过来以后，安全考虑，先用`cat`指令查看了一下`test`文件，发现刚才在子分支上的修改被带过来了。  
 **3）**为避免接下来修复后提交时将该修改也一起提交，故切换回`dev`。利用`git stash`指令将这里的工作隐藏。  
 **4）**再切换回`master`分支，再次用`cat`指令查看`test`文件，发现该文件不见了。证明隐藏生效，可以修复bug了。首先从`master`创建临时分支——`issue-001`，切换到这个分支上打开`problem`文件，对其进行修改后提交，再切换回`master`分支，将临时分支合并到主分支，bug解决，删除`issue-001`分支。  
-**5）**为继续进行`dev`中未完成的工作，切换回`dev`分支，执行命令`git stash pop`，找回原文件。
-
+**5）**为继续进行`dev`中未完成的工作，切换回`dev`分支，执行命令`git stash pop`，找回原文件。  
 ---
 #五、标签管理
 
 ##1.创建标签
-为方便查找文件版本，可以对版本号打上标签，步骤如下：
-
+为方便查找文件版本，可以对版本号打上标签，步骤如下：  
 **Step1**：切换到需要打标签的分支上
 
 **Step2**：用命令`git tag [-a] <tagname> [-m] [“解释性文字”] [版本id]`新建一个标签，默认为`HAED`版本，也可以加上`commit id`指定任意版本。注：也可以加上选项`-s` ，用私钥签名一个标签（`PGP`签名），具体用法百度可查。
@@ -208,42 +205,61 @@ $ git checkout dev
 **3）**对于已经推送到远程的标签，如果想要删除，则需要先用`git tag -d <tagname>`将其在本地删除，然后通过命令`git push origin :refs/tags/<tagname>`将其从远程删除。  
 
 ---
+#五、标签管理
+
+##1.创建标签
+为方便查找文件版本，可以对版本号打上标签，步骤如下：  
+**Step1**：切换到需要打标签的分支上
+
+**Step2**：用命令`git tag [-a] <tagname> [-m] [“解释性文字”] [版本id]`新建一个标签，默认为`HAED`版本，也可以加上`commit id`指定任意版本。注：也可以加上选项`-s` ，用私钥签名一个标签（`PGP`签名），具体用法百度可查。
+
+命令`git show <tagname>`可以看到说明文字，若加上了签名，则也可以看到签名信息
+
+命令`git tag`可以查看所有标签
+
+##2.操作标签
+**1）**如果标签打错了，可通过命令`git tag -d <tagname>`来将其删除。因为创建的标签都只存储在本地，不会自动推送到远程。所以打错的标签可在本地安全删除。  
+**2）**若要推送某个标签至远程，可使用命令`git push origin <tagname>`，或者使用命令`git push origin --tags`将所有尚未推送到远程的标签一次性推送至远程。  
+**3）**对于已经推送到远程的标签，如果想要删除，则需要先用`git tag -d <tagname>`将其在本地删除，然后通过命令`git push origin :refs/tags/<tagname>`将其从远程删除。  
+
+---
 #六、使用GitHub
 ##1.GitHub中的一些功能解释
-
-Gist:用于管理和发布一些没必要保存在仓库中的代码。  
-Popular repository:显示用户的公开仓库中受欢迎的仓库。  
-Contributions:显示每日用户对仓库的贡献程度。  
-Contibution activity:按时间顺序显示具体贡献活动的链接。  
-watch:相当于"订阅"，点击后，在用户的公开活动中会显示该仓库的更新。  
-star:相当于"收藏"，用户可以在该标记中找到被star过的仓库。  
-Fork:将原项目复制到了自己的仓库中，相当于在原有主分支上新建了一个分支。  
-code:显示该仓库中的文件列表。  
-issue:用于bug报告、功能添加、方向性讨论等。  
-pull request:代码的更改和讨论都可以在此进行。  
-pulse:显示该仓库最近的活动信息。  
-Graphs:以图表形式显示该仓库的各项指标。  
-commits:显示当前分支的提交历史。  
-branches:查看仓库的分支列表。  
-releases:显示仓库的tag列表。  
-contributors:显示对该仓库进行过提交的程序员名单。  
-raw:直接在浏览器中显示该文件的内容。  
-blame:按行显示最新提交的信息。  
-history:查看该文件的历史操作记录。  
+|功能 |解释   |
+|:------:|:----------:|
+|**Gist**| 用于管理和发布一些没必要保存在仓库中的代码。  |
+|**Popular repository**|显示用户的公开仓库中受欢迎的仓库。  |
+|**Contributions**|显示每日用户对仓库的贡献程度。  |
+|**Contibution activity**|按时间顺序显示具体贡献活动的链接。  |
+|**watch**|相当于"订阅"，点击后，在用户的公开活动中会显示该仓库的更新。  |
+|**star**|相当于"收藏"，用户可以在该标记中找到被star过的仓库。  |
+|**Fork**|将原项目复制到了自己的仓库中，相当于在原有主分支上新建了一个分支。|  
+|**code**|显示该仓库中的文件列表。  |
+|**issue**|用于bug报告、功能添加、方向性讨论等。  |
+|**pull request**|代码的更改和讨论都可以在此进行。  |
+|**pulse**|显示该仓库最近的活动信息。  |
+|**Graphs**|以图表形式显示该仓库的各项指标。  |
+|**commits**|显示当前分支的提交历史。  |
+|**branches**|查看仓库的分支列表。  |
+|**releases**|显示仓库的tag列表。  |
+|**contributors**|显示对该仓库进行过提交的程序员名单。  |
+|**raw**|直接在浏览器中显示该文件的内容。  |
+|**blame**|按行显示最新提交的信息。  |
+|**history**|查看该文件的历史操作记录。  |
 
 
 ##2.在GitHub中参与一个开源项目的步骤如下:
 **Step1**:访问想要参与的项目主页，点击`Fork`则将该项目仓库复制到了自己的远程库下。注:在GitHub中，可以任意Fork开源仓库。  
-**Step2**:将复制得到的内容从自己的远程库中clone至本地仓库。注意:一定要从自己的账户下clone，只有这样才可以推送修改至远程，如果从作者账号clone，则没有推送修改的权限。  
+**Step2**:将复制得到的内容从自己的远程库中`clone`至本地仓库。注意:一定要从自己的账户下`clone`，只有这样才可以推送修改至远程，如果从作者账号clone，则没有推送修改的权限。  
 **Step3**:对其中的内容进行修改，工作完成后推送至自己的远程库。  
-**Step4**:如果希望作者接受你的修改，则可以在GitHub上发起一个pull request。如果对方接受，则修改就合并到该项目中，开源项目即得到了完善。  
+**Step4**:如果希望作者接受你的修改，则可以在GitHub上发起一个`pull request`。如果对方接受，则修改就合并到该项目中，开源项目即得到了完善。  
 
 ---
 #七、自定义Git
 一些常用的Git自定义功能  
 ##1.显示不同的颜色
 ```
-git config --global color.ui true
+$ git config --global color.ui true
 ```
 ##2.忽略特殊文件
 **忽略原则**是:  
@@ -253,8 +269,7 @@ git config --global color.ui true
 
 **忽略方法**是:修改git工作区根目录下的`.gitignore`文件，将要忽略的文件名填进去，Git就会自动将其忽略(该文件本身要提交到Git，对其做版本管理)。  
 
-检验是否忽略的方法是，使用命令`git status`查看是否提示`working directory clean`。  
-
+**检验是否忽略的方法**是:使用命令`git status`查看是否提示`working directory clean`。    
 命令`git check-ignore`可用来检查`.gitignore`文件，例如:  
 ```
 $ git check-ignore -v App.class
@@ -291,16 +306,19 @@ $ git config --global --unset alias.xxx
 ##4.搭建Git服务器
 如果不想公开源代码，又不愿意为GitHub私有仓库付费，可以选择自己搭建一台Git服务器作为私有仓库使用。  
 ###1)搭建方法
-**Step1**:安装git
+**Step1**:安装git  
 ```
 $ sudo apt-get install git
 ```
-**Step2**:创建一个git用户，来运行git服务
+
+**Step2**:创建一个git用户，来运行git服务  
 ```
 $ sudo adduser git
 ```
+
 **Step3**:创建证书登录  
-收集所有需要登录的用户的公钥，也就是他们各自的`id_rsa.pub`文件，将所有公钥导入到`/home/git/.ssh/authorized_keys`文件中，一行一个。
+收集所有需要登录的用户的公钥，也就是他们各自的`id_rsa.pub`文件，将所有公钥导入到`/home/git/.ssh/authorized_keys`文件中，一行一个。  
+
 **Step4**:初始化Git仓库  
 先选定一个目录作为Git仓库，假定为`/srv/sample.git`，在`/srv`目录下输入命令:
 ```
@@ -310,8 +328,9 @@ Git就会创建一个裸仓库，裸仓库没有工作区，因为这台服务�
 ```
 $ sudo chown -R git:git sample.git
 ```
+
 **Step5**:禁用shell登录  
-出于安全考虑，第二步创建的`git`用户不允许登录shell，这可以通过编辑`/etc/passwd`文件完成。找到该文件中类似下面一行:
+出于安全考虑，第二步创建的`git`用户不允许登录shell，这可以通过编辑`/etc/passwd`文件完成。找到该文件中类似下面一行:  
 ```
 git:x:1001:1001:,,,:/home/git:/bin/bash
 ```
@@ -320,13 +339,14 @@ git:x:1001:1001:,,,:/home/git:/bin/bash
 git:x:1001:1001:,,,:/home/git:/usr/bin/git-shell
 ```
 这样，`git`用户就可以正常通过ssh使用git，但无法登录shell，因为我们为`git`用户指定的`git-shell`每次一登录就会自动退出。  
+
 **Step6**:clone远程仓库  
 ```
 $ git clone git@server:/srv/sample.git
 Cloning into 'sample'...
 warning: You appear to have cloned an empty repository.
 ```
-剩下的推送方法类似于推送到GitHub。
+剩下的推送方法类似于推送到GitHub。  
 ###2)管理公钥
 如果团队很小，可以利用上述方法管理。如果团队较大，可以用`Gitosis`来管理公钥。
 
